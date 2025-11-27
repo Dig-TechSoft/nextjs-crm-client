@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { TrendingUp, TrendingDown, Clock, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -20,12 +21,23 @@ interface Position {
   volume: number;
 }
 
+
 export default function PositionsPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Add this refresh function
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    setCurrentPage(1); // optional: reset to first page
+    await fetchPositions();
+    setIsRefreshing(false);
+  };
 
   useEffect(() => {
     fetchPositions();
@@ -126,12 +138,25 @@ export default function PositionsPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto py-6 space-y-6">
-        <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Open Positions</h2>
-          <p className="text-muted-foreground">
-            Overview of your current open trading positions.
-          </p>
+          {/* Refresh Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={loading || isRefreshing}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </Button>
         </div>
+        <p className="text-muted-foreground">
+          Overview of your current open trading positions.
+        </p>
+      </div>
 
         {/* Statistics Cards */}
         <div className="grid gap-4 md:grid-cols-3">

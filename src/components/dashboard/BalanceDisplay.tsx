@@ -1,10 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockUser } from "@/lib/mock-data";
 
 export function BalanceDisplay({ balance, accountNumber }: { balance: number; accountNumber: string }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="w-full max-w-xs"> {/* limits max width */}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
         <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -19,14 +18,14 @@ export function BalanceDisplay({ balance, accountNumber }: { balance: number; ac
           <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4">
         <div className="text-2xl font-bold">
           {new Intl.NumberFormat("en-US", {
             style: "currency",
             currency: "USD",
           }).format(balance)}
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground mt-1">
           Account: {accountNumber}
         </p>
       </CardContent>

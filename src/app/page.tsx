@@ -44,7 +44,6 @@ export default async function Home() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="col-span-2 space-y-4">
                 <BalanceDisplay balance={balance} accountNumber={session.value} />
-                <ActionButtons />
             </div>
             {/* You could add more widgets here, like Open Positions summary */}
         </div>

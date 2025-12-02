@@ -38,32 +38,43 @@ export function Header() {
             </span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link
-              href="/"
-              className="transition-colors hover:text-foreground/80 text-foreground"
-            >
-              Dashboard
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
-                Statistics
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <Link href="/history">History</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/positions">Positions</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href="/settings"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              Settings
-            </Link>
-          </nav>
+          <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">
+            Dashboard
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+              Statistics
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild><Link href="/history">History</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/positions">Positions</Link></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* NEW: Funds Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+              Funds
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem asChild>
+                <Link href="/funds/deposit" className="flex items-center gap-2">
+                  Deposit
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/funds/withdrawal" className="flex items-center gap-2">
+                  Withdrawal
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Link href="/settings" className="transition-colors hover:text-foreground/80 text-foreground/60">
+            Settings
+          </Link>
+        </nav>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">

@@ -43,7 +43,7 @@ export function Header() {
           </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer" suppressHydrationWarning>
               Statistics
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -54,7 +54,7 @@ export function Header() {
 
           {/* NEW: Funds Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+            <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer" suppressHydrationWarning>
               Funds
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -84,12 +84,12 @@ export function Header() {
             <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
+                <Button variant="ghost" className="flex items-center gap-2" suppressHydrationWarning>
                   <UserCircle className="h-5 w-5" />
                   <span className="text-sm font-medium">Alex Trader</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56" suppressHydrationWarning>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

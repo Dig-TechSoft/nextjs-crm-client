@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link
-              href="#"
+              href="/settings"
               className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
               Settings
@@ -68,7 +69,8 @@ export function Header() {
           <div className="w-full flex-1 md:w-auto md:flex-none">
             {/* Search or other controls could go here */}
           </div>
-          <nav className="flex items-center">
+          <nav className="flex items-center gap-2">
+            <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
@@ -85,9 +87,11 @@ export function Header() {
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">

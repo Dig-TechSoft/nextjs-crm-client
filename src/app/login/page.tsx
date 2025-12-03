@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
@@ -20,10 +27,10 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ login, password }),
       });
@@ -33,8 +40,8 @@ export default function LoginPage() {
         router.push("/");
       } else {
         // Extract message from "CODE Message" format (e.g., "3006 Invalid account password")
-        const errorMessage = data.retcode 
-          ? data.retcode.replace(/^\d+\s+/, '') // Remove error code prefix
+        const errorMessage = data.retcode
+          ? data.retcode.replace(/^\d+\s+/, "") // Remove error code prefix
           : "Login failed";
         setError(errorMessage);
       }
@@ -49,7 +56,18 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">MT5 CRM Login</CardTitle>
+          <div className="flex flex-col items-center gap-3">
+            <Image
+              src="/images/flamycom.png"
+              alt="Flamycom logo"
+              width={420}
+              height={118}
+              className="h-20 w-auto"
+            />
+            <CardTitle className="text-2xl font-bold text-center">
+              Account Login
+            </CardTitle>
+          </div>
           <CardDescription className="text-center">
             Enter your MT5 account credentials
           </CardDescription>
@@ -62,7 +80,9 @@ export default function LoginPage() {
                 id="login"
                 type="text"
                 value={login}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLogin(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setLogin(e.target.value)
+                }
                 required
               />
             </div>
@@ -72,7 +92,9 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value)
+                }
                 required
               />
             </div>

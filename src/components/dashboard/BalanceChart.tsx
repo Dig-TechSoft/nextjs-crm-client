@@ -54,7 +54,7 @@ export function BalanceChart() {
 
   if (loading) {
     return (
-      <Card className="col-span-4">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Balance History</CardTitle>
         </CardHeader>
@@ -66,7 +66,7 @@ export function BalanceChart() {
   }
 
   return (
-    <Card className="col-span-4">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Balance History</CardTitle>
       </CardHeader>

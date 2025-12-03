@@ -1,33 +1,58 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function BalanceDisplay({ balance, accountNumber }: { balance: number; accountNumber: string }) {
+interface AccountData {
+  Login: string;
+  Balance: string;
+  Credit: string;
+  Margin: string;
+  MarginFree: string;
+  MarginLevel: string;
+  Equity: string;
+  Profit: string;
+  Floating: string;
+}
+
+export function BalanceDisplay({ data }: { data: AccountData }) {
+  const formatCurrency = (value: string | number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(Number(value));
+  };
+
   return (
-    <Card className="w-full max-w-xs"> {/* limits max width */}
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
-        <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          className="h-4 w-4 text-muted-foreground"
-        >
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2 pt-4 px-4">
+        <CardTitle className="text-sm font-medium">Account Overview</CardTitle>
+        <div className="text-xs text-muted-foreground">Account: {data.Login}</div>
       </CardHeader>
       <CardContent className="px-4 pb-4">
-        <div className="text-2xl font-bold">
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(balance)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Balance</span>
+            <span className="text-lg font-bold">{formatCurrency(data.Balance)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Equity</span>
+            <span className="text-lg font-bold text-blue-600">{formatCurrency(data.Equity)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Margin</span>
+            <span className="text-sm font-medium">{formatCurrency(data.Margin)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Free Margin</span>
+            <span className="text-sm font-medium">{formatCurrency(data.MarginFree)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Margin Level</span>
+            <span className="text-sm font-medium">{Number(data.MarginLevel).toFixed(2)}%</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Credit</span>
+            <span className="text-sm font-medium">{formatCurrency(data.Credit)}</span>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          Account: {accountNumber}
-        </p>
       </CardContent>
     </Card>
   );

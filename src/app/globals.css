@@ -226,3 +226,26 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* globals.css  (or any global stylesheet you already have) */
+html,
+body,
+#__next {
+  height: 100%;
+}
+
+/* Ensures every page has full height and no layout shift */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Flex column that pushes footer down and prevents header jump */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-wrapper>main {
+  flex: 1;
+}

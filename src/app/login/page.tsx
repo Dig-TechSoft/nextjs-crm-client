@@ -33,6 +33,7 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ login, password }),
+        credentials: "include",
       });
       const data = await res.json();
 

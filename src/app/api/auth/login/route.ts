@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,16 +15,25 @@ export async function POST(request: NextRequest) {
 
         // Check if verification was successful
         if (data.success && data.valid) {
-            // Set session cookie
-            const cookieStore = await cookies();
-            cookieStore.set('session', login, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24, // 1 day
+            // Decide if we should set a Secure cookie based on the incoming request protocol.
+            // On HTTP (e.g., IP/localhost deployments), setting Secure would drop the cookie.
+            const isHttps =
+              request.headers.get("x-forwarded-proto") === "https" ||
+              request.nextUrl?.protocol === "https:" ||
+              request.url.startsWith("https://");
+
+            const response = NextResponse.json(data);
+            response.cookies.set({
+              name: "session",
+              value: login,
+              httpOnly: true,
+              secure: isHttps,
+              sameSite: "lax",
+              maxAge: 60 * 60 * 24,
+              path: "/",
             });
 
-            return NextResponse.json(data);
+            return response;
         } else {
             return NextResponse.json(data);
         }

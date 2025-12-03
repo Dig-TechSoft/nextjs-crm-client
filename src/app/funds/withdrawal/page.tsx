@@ -130,7 +130,7 @@ export default function WithdrawalPage() {
     !accountLoading;
 
   const handleSubmit = async () => {
-    const available = parseFloat(accountData?.MarginFree || "0");
+    const available = parseFloat(accountData?.Balance || "0");
     if (parseFloat(amount) > available) {
       setError(
         `Insufficient available funds (margin free: $${available.toFixed(2)})`

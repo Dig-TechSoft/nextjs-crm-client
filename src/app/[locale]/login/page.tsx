@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("Login");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,11 +45,11 @@ export default function LoginPage() {
         // Extract message from "CODE Message" format (e.g., "3006 Invalid account password")
         const errorMessage = data.retcode
           ? data.retcode.replace(/^\d+\s+/, "") // Remove error code prefix
-          : "Login failed";
+          : t("error");
         setError(errorMessage);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError(t("error"));
     } finally {
       setLoading(false);
     }
@@ -66,17 +68,17 @@ export default function LoginPage() {
               className="h-20 w-auto"
             />
             <CardTitle className="text-2xl font-bold text-center">
-              Account Login
+              {t("title")}
             </CardTitle>
           </div>
           <CardDescription className="text-center">
-            Enter your MT5 account credentials
+            {t("subtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="login">Login ID</Label>
+              <Label htmlFor="login">{t("loginId")}</Label>
               <Input
                 id="login"
                 type="text"
@@ -88,7 +90,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -105,7 +107,7 @@ export default function LoginPage() {
               </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Verifying..." : "Login"}
+              {loading ? t("verifying") : t("loginButton")}
             </Button>
           </form>
         </CardContent>

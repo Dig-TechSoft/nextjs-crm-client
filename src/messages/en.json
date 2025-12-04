@@ -167,7 +167,8 @@
         "loginId": "Login ID",
         "password": "Password",
         "loginButton": "Login",
-        "verifying": "Verifying..."
+        "verifying": "Verifying...",
+        "error": "Login failed"
     },
     "Common": {
         "loading": "Loading...",

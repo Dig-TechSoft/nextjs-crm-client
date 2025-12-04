@@ -179,6 +179,15 @@
         "passwordsDoNotMatch": "密码不一致",
         "description": "管理您的账户设置和偏好。"
     },
+    "Login": {
+        "title": "账户登录",
+        "subtitle": "输入您的 MT5 账户凭证",
+        "loginId": "登录 ID",
+        "password": "密码",
+        "loginButton": "登录",
+        "verifying": "验证中...",
+        "error": "登录失败"
+    },
     "FundsHistory": {
         "deposit": {
             "title": "存款记录",

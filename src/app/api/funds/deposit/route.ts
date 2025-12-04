@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { query } from '@/lib/db';
 import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 
-// Project-relative upload folder (cross-environment)
-const UPLOAD_DIR = join(process.cwd(), 'deposit_receipt');
+// Resolve upload folder from env with a safe fallback for local dev
+const uploadRoot = process.env.DEPOSIT_RECEIPT_DIR && isAbsolute(process.env.DEPOSIT_RECEIPT_DIR)
+    ? process.env.DEPOSIT_RECEIPT_DIR
+    : join(process.cwd(), 'deposit_receipt');
 
 // Increase file size limit (important!)
 export const config = {
@@ -47,9 +49,9 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(await file.arrayBuffer());
         const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
         const filename = `${uploadCode}.${ext}`;
-        const filepath = join(UPLOAD_DIR, filename);
+        const filepath = join(uploadRoot, filename);
 
-        await mkdir(UPLOAD_DIR, { recursive: true });
+        await mkdir(uploadRoot, { recursive: true });
         await writeFile(filepath, buffer);
 
         // 5. Insert into DB

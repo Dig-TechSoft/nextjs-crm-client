@@ -1,8 +1,13 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 
 export function ActionButtons() {
+  const t = useTranslations("Dashboard.actions");
+
   return (
     <div className="grid w-full gap-3 sm:grid-cols-2">
       <Button
@@ -12,7 +17,7 @@ export function ActionButtons() {
       >
         <Link href="/funds/deposit" className="flex items-center justify-center gap-2">
           <ArrowDownToLine className="h-4 w-4" />
-          Deposit Funds
+          {t("deposit")}
         </Link>
       </Button>
       <Button
@@ -23,7 +28,7 @@ export function ActionButtons() {
       >
         <Link href="/funds/withdrawal" className="flex items-center justify-center gap-2">
           <ArrowUpFromLine className="h-4 w-4" />
-          Withdraw Funds
+          {t("withdraw")}
         </Link>
       </Button>
     </div>

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -31,6 +32,8 @@ interface AccountData {
 }
 
 export default function WithdrawalPage() {
+  const t = useTranslations('Funds');
+  const tCommon = useTranslations('Common');
   const [amount, setAmount] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -111,7 +114,7 @@ export default function WithdrawalPage() {
         }
       } catch (err: any) {
         console.error("Failed to load account:", err);
-        setError("Failed to load account data. Check login or server.");
+        setError(tCommon('error'));
       } finally {
         setAccountLoading(false);
       }
@@ -157,10 +160,10 @@ export default function WithdrawalPage() {
       if (json.success) {
         setSuccess(true);
       } else {
-        setError(json.error || "Submission failed");
+        setError(json.error || tCommon('error'));
       }
     } catch (err) {
-      setError("Failed to submit. Check internet connection.");
+      setError(tCommon('error'));
     } finally {
       setLoading(false);
     }
@@ -177,15 +180,14 @@ export default function WithdrawalPage() {
                 <CardContent className="pt-12 pb-10">
                   <CheckCircle2 className="h-16 w-16 sm:h-20 sm:w-20 text-green-600 mx-auto mb-6" />
                   <h2 className="text-3xl font-bold mb-3">
-                    Withdrawal Request Submitted!
+                    {t('withdrawSuccess')}
                   </h2>
                   <p className="text-lg text-muted-foreground">
                     Amount: <strong>${amount}</strong> to{" "}
                     <strong>{bankName}</strong>
                   </p>
                   <p className="mt-4 text-sm text-muted-foreground">
-                    Your request is pending review - usually processed within
-                    1-24 hours
+                    {t('pendingReview')}
                   </p>
                 </CardContent>
               </Card>
@@ -195,18 +197,18 @@ export default function WithdrawalPage() {
               <div className="text-center mb-10">
                 <ArrowUpCircle className="h-14 w-14 sm:h-16 sm:w-16 text-red-600 mx-auto mb-4" />
                 <h1 className="text-3xl sm:text-4xl font-bold">
-                  Withdrawal Request
+                  {t('withdrawalRequest')}
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                  Secure manual withdrawal - processed within 24 hours
+                  {t('secureWithdrawal')}
                 </p>
               </div>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Withdraw to Bank Account</CardTitle>
+                  <CardTitle>{t('withdrawToBank')}</CardTitle>
                   <CardDescription>
-                    Payment Method: Online Bank Transfer
+                    {t('onlineBank')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -214,7 +216,7 @@ export default function WithdrawalPage() {
                     <div className="text-center py-8">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                       <p className="text-sm text-muted-foreground mt-2">
-                        Loading your account data...
+                        {t('loadingAccount')}
                       </p>
                     </div>
                   )}
@@ -222,14 +224,14 @@ export default function WithdrawalPage() {
                   {accountData && !accountLoading && (
                     <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Balance (Available)</span>
+                        <span>{t('balanceAvailable')}</span>
                         <strong>${formatAmount(accountData.Balance)}</strong>
                       </div>
                     </div>
                   )}
 
                   <div className="space-y-2">
-                    <Label>Amount to Withdraw (USD)</Label>
+                    <Label>{t('amountWithdraw')}</Label>
                     <Input
                       type="number"
                       placeholder="500.00"
@@ -243,7 +245,7 @@ export default function WithdrawalPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Bank Name</Label>
+                      <Label>{t('bankName')}</Label>
                       <Input
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
@@ -251,7 +253,7 @@ export default function WithdrawalPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Account Number</Label>
+                      <Label>{t('accountNumber')}</Label>
                       <Input
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
@@ -261,7 +263,7 @@ export default function WithdrawalPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Account Holder Name</Label>
+                    <Label>{t('accountHolder')}</Label>
                     <Input
                       value={accountName}
                       onChange={(e) => setAccountName(e.target.value)}
@@ -279,8 +281,7 @@ export default function WithdrawalPage() {
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      Minimum withdrawal: $50 | No fees | Processing time: 1-24
-                      hours
+                      {t('minWithdraw')}
                     </AlertDescription>
                   </Alert>
 
@@ -291,7 +292,7 @@ export default function WithdrawalPage() {
                     onClick={handleSubmit}
                     disabled={!canSubmit}
                   >
-                    {loading ? "Submitting..." : "Submit Withdrawal Request"}
+                    {loading ? t('submitting') : t('submitWithdraw')}
                   </Button>
                 </CardContent>
               </Card>

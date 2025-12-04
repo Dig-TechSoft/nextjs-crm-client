@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Lock, Save, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl";
 
 export default function SettingsPage() {
+  const t = useTranslations("Settings");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ export default function SettingsPage() {
     setLoading(true);
 
     if (formData.newPassword !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("passwordsDoNotMatch"));
       setLoading(false);
       return;
     }
@@ -95,9 +97,9 @@ export default function SettingsPage() {
         <div className="max-w-2xl mx-auto space-y-8">
           
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
             <p className="text-muted-foreground">
-              Manage your account settings and preferences.
+              {t("description")}
             </p>
           </div>
 
@@ -105,10 +107,10 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
-                Security
+                {t("security")}
               </CardTitle>
               <CardDescription>
-                Update your password to keep your account secure.
+                {t("updatePassword")}
               </CardDescription>
             </CardHeader>
             <Separator />
@@ -131,40 +133,40 @@ export default function SettingsPage() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Label htmlFor="currentPassword">{t("currentPassword")}</Label>
                   <Input
                     id="currentPassword"
                     name="currentPassword"
                     type="password"
                     value={formData.currentPassword}
                     onChange={handleChange}
-                    placeholder="Enter current password"
+                    placeholder={t("enterCurrent")}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
+                  <Label htmlFor="newPassword">{t("newPassword")}</Label>
                   <Input
                     id="newPassword"
                     name="newPassword"
                     type="password"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    placeholder="Enter new password"
+                    placeholder={t("enterNew")}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">{t("confirmNew")}</Label>
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Confirm new password"
+                    placeholder={t("confirmNew")}
                     required
                   />
                 </div>
@@ -174,12 +176,12 @@ export default function SettingsPage() {
                     {loading ? (
                       <>
                         <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Saving...
+                        {t("saving")}
                       </>
                     ) : (
                       <>
                         <Save className="mr-2 h-4 w-4" />
-                        Change Password
+                        {t("changePassword")}
                       </>
                     )}
                   </Button>

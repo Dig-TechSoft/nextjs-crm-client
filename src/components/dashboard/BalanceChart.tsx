@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   Line,
   LineChart,
@@ -20,6 +21,8 @@ interface BalanceData {
 export function BalanceChart() {
   const [data, setData] = useState<BalanceData[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations("Dashboard.balanceChart");
+  const format = useFormatter();
 
   useEffect(() => {
     async function fetchData() {
@@ -39,27 +42,29 @@ export function BalanceChart() {
     fetchData();
   }, []);
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
-    }
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-    }
-    return num.toString();
-  };
+  const formatCurrencyCompact = (value: number) =>
+    format.number(value, {
+      style: "currency",
+      currency: "USD",
+      notation: "compact",
+      maximumFractionDigits: 1,
+    });
+
+  const formatCurrency = (value: number) =>
+    format.number(value, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    });
 
   if (loading) {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Balance History</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent className="pl-2 h-[300px] flex items-center justify-center">
-          <div className="text-muted-foreground">Loading chart data...</div>
+          <div className="text-muted-foreground">{t("loading")}</div>
         </CardContent>
       </Card>
     );
@@ -68,7 +73,7 @@ export function BalanceChart() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Balance History</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
         <div className="h-[300px] w-full [&_.recharts-surface]:outline-none">
@@ -82,7 +87,7 @@ export function BalanceChart() {
                 axisLine={false}
                 tickFormatter={(value) => {
                     const date = new Date(value);
-                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                    return format.dateTime(date, { month: "numeric", day: "numeric" });
                 }}
               />
               <YAxis
@@ -90,12 +95,12 @@ export function BalanceChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${formatNumber(value)}`}
+                tickFormatter={(value) => formatCurrencyCompact(value)}
               />
               <Tooltip 
                 contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
-                formatter={(value: number) => [`$${formatNumber(value)}`, 'Balance']}
+                formatter={(value: number) => [formatCurrency(value), t("tooltipLabel")]}
                 cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
               />
               <Line

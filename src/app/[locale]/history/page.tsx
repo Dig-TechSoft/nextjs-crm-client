@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useFormatter, useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
@@ -21,6 +22,9 @@ interface Deal {
 }
 
 export default function HistoryPage() {
+  const t = useTranslations('History');
+  const tCommon = useTranslations('Common');
+  const format = useFormatter();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -39,33 +43,27 @@ export default function HistoryPage() {
       if (data.success) {
         setDeals(data.deals);
       } else {
-        setError(data.error || "Failed to load history");
+        setError(data.error || tCommon('error'));
       }
     } catch (err) {
-      setError("An error occurred while loading history");
+      setError(tCommon('error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
+  const formatDate = (dateString: string) =>
+    format.dateTime(new Date(dateString), {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+  const formatCurrency = (value: number) =>
+    format.number(value, {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
-    }).format(value);
-  };
+    });
 
   const totalProfit = deals.reduce((sum, deal) => sum + deal.profit, 0);
   const profitableDeals = deals.filter(d => d.profit > 0).length;
@@ -97,7 +95,7 @@ export default function HistoryPage() {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading trading history...</p>
+              <p className="text-muted-foreground">{tCommon('loading')}</p>
             </div>
           </div>
         </main>
@@ -127,9 +125,9 @@ export default function HistoryPage() {
       <Header />
       <main className="flex-1 container mx-auto py-6 space-y-6">
         <div className="flex flex-col space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Trading History</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
           <p className="text-muted-foreground">
-            Complete overview of your trading performance and history.
+            {t('overview')}
           </p>
         </div>
 
@@ -137,7 +135,7 @@ export default function HistoryPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Profit/Loss</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('totalPL')}</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -145,33 +143,33 @@ export default function HistoryPage() {
                 {formatCurrency(totalProfit)}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                From {deals.length} total trades
+                {t('fromTrades', {count: deals.length})}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profitable Trades</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('profitableTrades')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">{profitableDeals}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {deals.length > 0 ? ((profitableDeals / deals.length) * 100).toFixed(1) : 0}% win rate
+                {t('winRate', {rate: deals.length > 0 ? ((profitableDeals / deals.length) * 100).toFixed(1) : 0})}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Losing Trades</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('losingTrades')}</CardTitle>
               <TrendingDown className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">{losingDeals}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {deals.length > 0 ? ((losingDeals / deals.length) * 100).toFixed(1) : 0}% loss rate
+                {t('lossRate', {rate: deals.length > 0 ? ((losingDeals / deals.length) * 100).toFixed(1) : 0})}
               </p>
             </CardContent>
           </Card>
@@ -180,16 +178,16 @@ export default function HistoryPage() {
         {/* Trading History Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Trades</CardTitle>
+            <CardTitle>{t('allTrades')}</CardTitle>
             <CardDescription>
-              Complete history of your closed positions
+              {t('historyDetails')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {deals.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No trading history found</p>
+                <p>{t('noHistory')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -197,13 +195,13 @@ export default function HistoryPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">Time</th>
-                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">Symbol</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Volume</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Entry Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">SL</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">TP</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Profit/Loss</th>
+                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.time')}</th>
+                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.symbol')}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.volume')}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.entryPrice')}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.sl')}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.tp')}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t('table.pl')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -245,7 +243,7 @@ export default function HistoryPage() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between border-t pt-4">
                     <div className="text-sm text-muted-foreground">
-                      Showing {startIndex + 1} to {Math.min(endIndex, deals.length)} of {deals.length} trades
+                      {tCommon('showing', {start: startIndex + 1, end: Math.min(endIndex, deals.length), total: deals.length})}
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -255,10 +253,10 @@ export default function HistoryPage() {
                         disabled={currentPage === 1}
                       >
                         <ChevronLeft className="h-4 w-4 mr-1" />
-                        Previous
+                        {tCommon('previous')}
                       </Button>
                       <div className="text-sm font-medium">
-                        Page {currentPage} of {totalPages}
+                        {tCommon('page', {current: currentPage, total: totalPages})}
                       </div>
                       <Button
                         variant="outline"
@@ -266,7 +264,7 @@ export default function HistoryPage() {
                         onClick={goToNextPage}
                         disabled={currentPage === totalPages}
                       >
-                        Next
+                        {tCommon('next')}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>

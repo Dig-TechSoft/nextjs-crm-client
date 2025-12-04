@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { TrendingUp, TrendingDown, Clock, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 
 interface Position {
   position: number;
@@ -23,6 +24,9 @@ interface Position {
 
 
 export default function PositionsPage() {
+  const t = useTranslations("Positions");
+  const tCommon = useTranslations("Common");
+  const format = useFormatter();
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -60,24 +64,18 @@ export default function PositionsPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
+  const formatDate = (dateString: string) =>
+    format.dateTime(new Date(dateString), {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+  const formatCurrency = (value: number) =>
+    format.number(value, {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
-    }).format(value);
-  };
+    });
 
   const totalProfit = positions.reduce((sum, pos) => sum + pos.profit, 0);
   const totalStorage = positions.reduce((sum, pos) => sum + pos.storage, 0);
@@ -140,7 +138,7 @@ export default function PositionsPage() {
       <main className="flex-1 container mx-auto py-6 space-y-6">
       <div className="flex flex-col space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Open Positions</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
           {/* Refresh Button */}
           <Button
             variant="outline"
@@ -150,11 +148,11 @@ export default function PositionsPage() {
             className="flex items-center gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+            <span>{isRefreshing ? t("refreshing") : t("refresh")}</span>
           </Button>
         </div>
         <p className="text-muted-foreground">
-          Overview of your current open trading positions.
+          {t("overview")}
         </p>
       </div>
 
@@ -162,7 +160,7 @@ export default function PositionsPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Floating P/L</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("floatingPL")}</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -170,14 +168,14 @@ export default function PositionsPage() {
                 {formatCurrency(totalProfit)}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                From {openPositions} open positions
+                {t("fromOpen", { count: openPositions })}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Storage</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("totalStorage")}</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -185,20 +183,20 @@ export default function PositionsPage() {
                 {formatCurrency(totalStorage)}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Accumulated swap/storage fees
+                {t("accumulatedSwapStorage")}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Open Positions</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("openPositions")}</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{openPositions}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Currently active trades
+                {t("openPositions")}
               </p>
             </CardContent>
           </Card>
@@ -207,16 +205,16 @@ export default function PositionsPage() {
         {/* Positions Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Open Positions</CardTitle>
+            <CardTitle>{t("allPositions")}</CardTitle>
             <CardDescription>
-              Details of your current open trades
+              {t("details")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {positions.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No open positions found</p>
+                <p>{t("noPositions")}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -224,15 +222,15 @@ export default function PositionsPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">Open Time</th>
-                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">Symbol</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Volume</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Open Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Current Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">SL</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">TP</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Profit</th>
-                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">Storage</th>
+                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.time")}</th>
+                        <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.symbol")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.volume")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.openPrice")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.currentPrice")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.sl")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.tp")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.profit")}</th>
+                        <th className="text-right py-3 px-4 font-medium text-sm text-muted-foreground">{t("table.storage")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -282,7 +280,7 @@ export default function PositionsPage() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between border-t pt-4">
                     <div className="text-sm text-muted-foreground">
-                      Showing {startIndex + 1} to {Math.min(endIndex, positions.length)} of {positions.length} positions
+                      {tCommon("showing", { start: startIndex + 1, end: Math.min(endIndex, positions.length), total: positions.length })}
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -292,10 +290,10 @@ export default function PositionsPage() {
                         disabled={currentPage === 1}
                       >
                         <ChevronLeft className="h-4 w-4 mr-1" />
-                        Previous
+                        {tCommon("previous")}
                       </Button>
                       <div className="text-sm font-medium">
-                        Page {currentPage} of {totalPages}
+                        {tCommon("page", { current: currentPage, total: totalPages })}
                       </div>
                       <Button
                         variant="outline"
@@ -303,7 +301,7 @@ export default function PositionsPage() {
                         onClick={goToNextPage}
                         disabled={currentPage === totalPages}
                       >
-                        Next
+                        {tCommon("next")}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>

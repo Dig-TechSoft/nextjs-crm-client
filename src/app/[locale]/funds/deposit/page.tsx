@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ import { Header } from "@/components/layout/Header";
 import { Upload, Wallet, Copy, Check, ArrowDownCircle } from "lucide-react";
 
 export default function DepositRequestPage() {
+  const t = useTranslations('Funds');
+  const tCommon = useTranslations('Common');
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("");
   const [usdtAmount, setUsdtAmount] = useState("");
@@ -49,7 +52,7 @@ export default function DepositRequestPage() {
 
   const handleSubmit = async () => {
     if (!amount || !method || !file || (method === "crypto_usdt" && !usdtAmount)) {
-      setError("Please fill all required fields");
+      setError(tCommon('error'));
       return;
     }
 
@@ -80,10 +83,10 @@ export default function DepositRequestPage() {
         setUsdtAmount("");
         setFile(null);
       } else {
-        setError(data.error || "Upload failed");
+        setError(data.error || tCommon('error'));
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError(tCommon('error'));
     } finally {
       setLoading(false);
     }
@@ -96,22 +99,22 @@ export default function DepositRequestPage() {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <ArrowDownCircle className="h-14 w-14 sm:h-16 sm:w-16 text-green-600 mx-auto mb-4" />
-            <h1 className="text-3xl sm:text-4xl font-bold">Deposit Request</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold">{t('depositRequest')}</h1>
             <p className="text-muted-foreground mt-2">
-              Submit your manual transfer proof for fast crediting
+              {t('submitProof')}
             </p>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Submit Transfer Proof</CardTitle>
+              <CardTitle>{t('submitTitle')}</CardTitle>
               <CardDescription>
-                Deposit will be credited after verification - usually within 5-30 minutes.
+                {t('submitDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="amount">Deposit Amount (USD)</Label>
+                <Label htmlFor="amount">{t('amount')}</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -125,14 +128,14 @@ export default function DepositRequestPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Payment Method</Label>
+                <Label>{t('paymentMethod')}</Label>
                 <Select value={method} onValueChange={setMethod} disabled={loading}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select transfer method" />
+                    <SelectValue placeholder={t('selectMethod')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bank_transfer">Bank Transfer (Local)</SelectItem>
-                    <SelectItem value="crypto_usdt">USDT TRC-20</SelectItem>
+                    <SelectItem value="bank_transfer">{t('bankTransfer')}</SelectItem>
+                    <SelectItem value="crypto_usdt">{t('cryptoUsdt')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -140,13 +143,13 @@ export default function DepositRequestPage() {
               {method && (
                 <Button variant="outline" className="w-full" onClick={() => setShowDetails(true)} disabled={loading}>
                   <Wallet className="mr-2 h-4 w-4" />
-                  View {method === "bank_transfer" ? "Bank" : "Wallet"} Details
+                  {t('viewDetails', {method: method === "bank_transfer" ? t('bank') : t('wallet')})}
                 </Button>
               )}
 
               {method === "crypto_usdt" && (
                 <div className="space-y-2">
-                  <Label htmlFor="usdtAmount">USDT Amount Sent</Label>
+                  <Label htmlFor="usdtAmount">{t('usdtAmount')}</Label>
                   <Input
                     id="usdtAmount"
                     type="number"
@@ -157,13 +160,13 @@ export default function DepositRequestPage() {
                     disabled={loading}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Enter exact amount including decimals
+                    {t('enterExact')}
                   </p>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label>Upload Proof of Payment</Label>
+                <Label>{t('uploadProof')}</Label>
                 <label
                   htmlFor="file-upload"
                   className="block border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 sm:p-8 text-center cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/5"
@@ -186,9 +189,9 @@ export default function DepositRequestPage() {
                     </div>
                   ) : (
                     <div>
-                      <p className="font-medium">Click to upload receipt</p>
+                      <p className="font-medium">{t('clickUpload')}</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        PNG, JPG, PDF - Max 10MB
+                        {t('maxSize')}
                       </p>
                     </div>
                   )}
@@ -204,7 +207,7 @@ export default function DepositRequestPage() {
               {success && (
                 <Alert className="border-green-600 bg-green-50">
                   <AlertDescription className="text-green-700 font-medium">
-                    Deposit request submitted successfully! We are reviewing your proof.
+                    {t('successTitle')} {t('successDesc')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -216,17 +219,17 @@ export default function DepositRequestPage() {
                 disabled={!amount || !method || !file || loading || (method === "crypto_usdt" && !usdtAmount)}
               >
                 {loading ? (
-                  "Submitting..."
+                  t('submitting')
                 ) : (
                   <>
                     <Upload className="mr-2 h-5 w-5" />
-                    Submit Deposit Request
+                    {t('submitButton')}
                   </>
                 )}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Minimum deposit: $10 | No fees | Fast processing
+                {t('minDeposit')}
               </p>
             </CardContent>
           </Card>
@@ -235,7 +238,7 @@ export default function DepositRequestPage() {
             <DialogContent className="sm:max-w-md max-w-[92vw]">
               <DialogHeader>
                 <DialogTitle className="text-xl">
-                  {method === "bank_transfer" ? "Bank Transfer Details" : "USDT TRC-20 Wallet"}
+                  {method === "bank_transfer" ? t('bankTransfer') : t('cryptoUsdt')}
                 </DialogTitle>
                 <DialogDescription>
                   {method === "bank_transfer"
@@ -248,11 +251,11 @@ export default function DepositRequestPage() {
                 {method === "bank_transfer" ? (
                   <div className="space-y-3">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between p-3 bg-muted rounded-lg">
-                      <span className="font-medium">Bank</span>
+                      <span className="font-medium">{t('bankName')}</span>
                       <span className="text-sm sm:text-base">{bankDetails.bankName}</span>
                     </div>
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 bg-muted rounded-lg">
-                      <span className="font-medium">Account No.</span>
+                      <span className="font-medium">{t('accountNumber')}</span>
                       <div className="flex items-center gap-2">
                         <code className="font-mono text-sm break-all">{bankDetails.accountNumber}</code>
                         <Button
@@ -266,7 +269,7 @@ export default function DepositRequestPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between p-3 bg-muted rounded-lg">
-                      <span className="font-medium">Holder</span>
+                      <span className="font-medium">{t('accountHolder')}</span>
                       <span className="text-sm sm:text-base">{bankDetails.accountHolder}</span>
                     </div>
                   </div>

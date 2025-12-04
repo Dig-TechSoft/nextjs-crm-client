@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { UserCircle, LogOut, Settings, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLocale, useTranslations } from "next-intl";
 
 export function Header() {
   const router = useRouter();
+  const t = useTranslations('Navigation');
+  const locale = useLocale();
   const [userLabel, setUserLabel] = useState<string>("Trader");
 
   const handleLogout = async () => {
@@ -57,105 +60,116 @@ export function Header() {
                 <Menu className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56" sideOffset={8}>
-              <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+            <DropdownMenuContent
+              align="start"
+              className="w-56"
+              sideOffset={8}
+              suppressHydrationWarning
+            >
+              <DropdownMenuLabel>{t('menuLabel')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/">Dashboard</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/history">History</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/positions">Positions</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/" locale={locale}>{t('dashboard')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/history" locale={locale}>{t('history')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/positions" locale={locale}>{t('positions')}</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/funds/deposit">Deposit</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/deposit/history">Deposit History</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/withdrawal">Withdrawal</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/withdrawal/history">Withdrawal History</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/funds/deposit" locale={locale}>{t('deposit')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/funds/deposit/history" locale={locale}>{t('depositHistory')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/funds/withdrawal" locale={locale}>{t('withdrawal')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/funds/withdrawal/history" locale={locale}>{t('withdrawalHistory')}</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/settings" locale={locale}>{t('settings')}</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src="/images/flamycom.png" alt="Flamycom logo" width={190} height={50} className="h-10 w-auto" />
+          <Link href="/" locale={locale} className="flex items-center space-x-2">
+            <Image src="/images/flamycom.png" alt="Flamycom logo" width={160} height={44} className="h-10 w-auto" />
           </Link>
         </div>
 
         <div className="hidden md:flex md:items-center md:space-x-6 text-sm font-medium mr-auto">
-          <Link href="/" className="flex items-center space-x-2 font-bold text-base">
+          <Link href="/" locale={locale} className="flex items-center space-x-2 font-bold text-base">
             <Image src="/images/flamycom.png" alt="Flamycom logo" width={240} height={64} className="h-14 w-auto" />
           </Link>
-          <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">
-            Dashboard
+          <Link href="/" locale={locale} className="transition-colors hover:text-foreground/80 text-foreground">
+            {t('dashboard')}
           </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer" suppressHydrationWarning>
-              Statistics
+              {t('statistics')}
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem asChild><Link href="/history">History</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/positions">Positions</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/history" locale={locale}>{t('history')}</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/positions" locale={locale}>{t('positions')}</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer" suppressHydrationWarning>
-              Funds
+              {t('funds')}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem asChild>
-                <Link href="/funds/deposit" className="flex items-center gap-2">
-                  Deposit
+                <Link href="/funds/deposit" locale={locale} className="flex items-center gap-2">
+                  {t('deposit')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/funds/deposit/history" className="flex items-center gap-2">
-                  Deposit History
+                <Link href="/funds/deposit/history" locale={locale} className="flex items-center gap-2">
+                  {t('depositHistory')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/funds/withdrawal" className="flex items-center gap-2">
-                  Withdrawal
+                <Link href="/funds/withdrawal" locale={locale} className="flex items-center gap-2">
+                  {t('withdrawal')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/funds/withdrawal/history" className="flex items-center gap-2">
-                  Withdrawal History
+                <Link href="/funds/withdrawal/history" locale={locale} className="flex items-center gap-2">
+                  {t('withdrawalHistory')}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/settings" className="transition-colors hover:text-foreground/80 text-foreground/60">
-            Settings
+          <Link href="/settings" locale={locale} className="transition-colors hover:text-foreground/80 text-foreground/60">
+            {t('settings')}
           </Link>
         </div>
 
         <nav className="flex items-center gap-2 ml-auto">
+          <LanguageSwitcher />
           <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2" suppressHydrationWarning>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2"
+                  suppressHydrationWarning
+                  aria-label="User menu"
+                >
                   <UserCircle className="h-5 w-5" />
-                  <span className="text-sm font-medium">{userLabel}</span>
+                  <span className="text-sm font-medium hidden sm:inline">{userLabel}</span>
                 </Button>
               </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56" suppressHydrationWarning>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('userMenu')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="flex items-center">
+                <Link href="/profile" locale={locale} className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>{t('profile')}</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center">
+                <Link href="/settings" locale={locale} className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>{t('settings')}</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
+                <span>{t('logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

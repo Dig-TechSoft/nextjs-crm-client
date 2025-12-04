@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useFormatter, useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
-import { ArrowDownCircle, CheckCircle2, XCircle, Clock, RefreshCw, Loader2 } from "lucide-react";
+import { ArrowDownCircle, CheckCircle2, Clock, Loader2, RefreshCw, XCircle } from "lucide-react";
 
 interface Deposit {
   Receipt_ID: number;
@@ -19,6 +20,8 @@ interface Deposit {
 export default function DepositHistory() {
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations("FundsHistory.deposit");
+  const format = useFormatter();
 
   const loadDeposits = async () => {
     setLoading(true);
@@ -29,7 +32,7 @@ export default function DepositHistory() {
         setDeposits(json.data || []);
       }
     } catch (err) {
-      console.error("Failed to load deposits");
+      console.error("Failed to load deposits", err);
     }
     setLoading(false);
   };
@@ -40,27 +43,43 @@ export default function DepositHistory() {
 
   const formatAmount = (raw: number | string) => {
     const num = Number(raw);
-    return isNaN(num) ? "0.00" : num.toFixed(2);
-  };
-
-  const formatTime = (t: string) => {
-    return new Date(t).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (isNaN(num)) return "0.00";
+    return format.number(num, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
     });
   };
+
+  const formatTime = (t: string) =>
+    format.dateTime(new Date(t), {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "approved":
-        return <Badge className="bg-green-600"><CheckCircle2 className="w-3 h-3 mr-1" />Approved</Badge>;
+        return (
+          <Badge className="bg-green-600">
+            <CheckCircle2 className="w-3 h-3 mr-1" />
+            {t("status.approved")}
+          </Badge>
+        );
       case "pending":
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="w-3 h-3 mr-1" />
+            {t("status.pending")}
+          </Badge>
+        );
       case "rejected":
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
+        return (
+          <Badge variant="destructive">
+            <XCircle className="w-3 h-3 mr-1" />
+            {t("status.rejected")}
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -72,19 +91,17 @@ export default function DepositHistory() {
       <main className="flex-1 container mx-auto py-12 px-4">
         <div className="text-center mb-10">
           <ArrowDownCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold">Deposit History</h1>
-          <p className="text-muted-foreground mt-2">
-            Track all your deposit requests
-          </p>
+          <h1 className="text-4xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground mt-2">{t("subtitle")}</p>
         </div>
 
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Recent Deposits</CardTitle>
+              <CardTitle>{t("recent")}</CardTitle>
               <Button onClick={loadDeposits} size="sm" variant="outline" disabled={loading}>
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-                Refresh
+                {t("refresh")}
               </Button>
             </div>
           </CardHeader>
@@ -92,36 +109,32 @@ export default function DepositHistory() {
             {loading ? (
               <div className="text-center py-16">
                 <Loader2 className="h-10 w-10 animate-spin mx-auto text-primary" />
-                <p className="text-muted-foreground mt-4">Loading deposits...</p>
+                <p className="text-muted-foreground mt-4">{t("loading")}</p>
               </div>
             ) : deposits.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
                 <ArrowDownCircle className="h-20 w-20 mx-auto mb-6 opacity-20" />
-                <p className="text-lg">No deposit requests yet</p>
-                <p className="text-sm mt-2">Your deposits will appear here</p>
+                <p className="text-lg">{t("emptyTitle")}</p>
+                <p className="text-sm mt-2">{t("emptySubtitle")}</p>
               </div>
             ) : (
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Method</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>{t("table.date")}</TableHead>
+                      <TableHead>{t("table.amount")}</TableHead>
+                      <TableHead>{t("table.method")}</TableHead>
+                      <TableHead>{t("table.status")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {deposits.map((d) => (
                       <TableRow key={d.Receipt_ID}>
-                        <TableCell className="whitespace-nowrap">
-                          {formatTime(d.Time)}
-                        </TableCell>
-                        <TableCell className="font-bold text-lg">
-                          ${formatAmount(d.Amount)}
-                        </TableCell>
+                        <TableCell className="whitespace-nowrap">{formatTime(d.Time)}</TableCell>
+                        <TableCell className="font-bold text-lg">{formatAmount(d.Amount)}</TableCell>
                         <TableCell className="font-medium">
-                          {d.PaymentMethod || "—"}
+                          {d.PaymentMethod || t("unknownMethod")}
                         </TableCell>
                         <TableCell>{getStatusBadge(d.Status)}</TableCell>
                       </TableRow>
@@ -132,9 +145,7 @@ export default function DepositHistory() {
             )}
 
             {deposits.length > 0 && (
-              <div className="mt-8 text-center text-sm text-muted-foreground">
-                Approved deposits are credited instantly • Pending requests are under review
-              </div>
+              <div className="mt-8 text-center text-sm text-muted-foreground">{t("note")}</div>
             )}
           </CardContent>
         </Card>

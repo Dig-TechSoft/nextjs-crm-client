@@ -5,8 +5,8 @@ import { query } from '@/lib/db';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
-// Your exact upload folder
-const UPLOAD_DIR = 'D:/Workspace/nextjs-crm-client/deposit_receipt';
+// Project-relative upload folder (cross-environment)
+const UPLOAD_DIR = join(process.cwd(), 'deposit_receipt');
 
 // Increase file size limit (important!)
 export const config = {

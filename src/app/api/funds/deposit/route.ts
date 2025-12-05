@@ -28,6 +28,18 @@ export async function POST(request: NextRequest) {
         }
         const login = session.value;
 
+        // Require verified/linked account before allowing deposits
+        const [signup] = await query<any[]>(
+            `SELECT email_verified_at, status FROM user_signups WHERE real_login = ? OR demo_login = ? LIMIT 1`,
+            [login, login]
+        );
+        if (!signup || !signup.email_verified_at || signup.status !== 'accounts_created') {
+            return NextResponse.json(
+                { error: 'Please complete email verification and account setup before depositing.' },
+                { status: 403 }
+            );
+        }
+
         // 2. Parse FormData
         const formData = await request.formData();
         const amount = formData.get('amount') as string;

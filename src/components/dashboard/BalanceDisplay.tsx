@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFormatter, useTranslations } from "next-intl";
+import { AccountSwitcher } from "./AccountSwitcher";
 
 interface AccountData {
   Login: string;
@@ -30,9 +31,7 @@ export function BalanceDisplay({ data }: { data: AccountData }) {
     <Card className="w-full">
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2 pt-4 px-4">
         <CardTitle className="text-sm font-medium">{t("title")}</CardTitle>
-        <div className="text-xs text-muted-foreground">
-          {t("accountLabel")}: {data.Login}
-        </div>
+        <AccountSwitcher currentLogin={data.Login} />
       </CardHeader>
       <CardContent className="px-4 pb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">

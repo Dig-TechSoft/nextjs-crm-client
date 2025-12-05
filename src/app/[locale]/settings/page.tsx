@@ -1,27 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Save, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Lock, Save, AlertCircle, CheckCircle2, RefreshCcw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function SettingsPage() {
   const t = useTranslations("Settings");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  
+
+  const [accounts, setAccounts] = useState<{
+    demo_login: string | null;
+    real_login: string | null;
+  } | null>(null);
+  const [target, setTarget] = useState<string>("email");
+  const [refreshing, setRefreshing] = useState(false);
+
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    loadAccounts();
+  }, []);
+
+  const loadAccounts = async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch("/api/accounts/list");
+      const data = await res.json();
+      if (data.success) {
+        setAccounts({ demo_login: data.demo_login, real_login: data.real_login });
+        setTarget(data.real_login || data.demo_login ? "email" : "email");
+      }
+    } catch (err) {
+      console.error("Failed to load accounts", err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const isValidPassword = (value: string) => {
+    const pattern =
+      /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*._-])[A-Za-z0-9!@#$%^&*._-]{8,12}$/;
+    return pattern.test(value);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -42,48 +76,58 @@ export default function SettingsPage() {
       return;
     }
 
-    if (formData.newPassword.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (!isValidPassword(formData.newPassword)) {
+      setError(t("passwordPolicy"));
       setLoading(false);
       return;
     }
 
     try {
-      // Fetch profile to get login
-      const profileRes = await fetch("/api/profile");
-      const profileData = await profileRes.json();
-      
-      if (!profileData.success || !profileData.user?.Login) {
-        setError("Could not verify user session. Please login again.");
-        setLoading(false);
-        return;
-      }
-
-      const login = profileData.user.Login;
-
-      // Verify current password
-      const checkRes = await fetch(`/api/user/check_password?login=${login}&password=${encodeURIComponent(formData.currentPassword)}&type=main`);
-      const checkData = await checkRes.json();
-
-      if (!checkData.success || !checkData.valid) {
-        setError("Current password is incorrect");
-        setLoading(false);
-        return;
-      }
-      
-      // Call change password API
-      const res = await fetch(`/api/user/change_password?login=${login}&type=main&password=${encodeURIComponent(formData.newPassword)}`);
-      const data = await res.json();
-
-      if (data.success) {
-        setSuccess("Password changed successfully");
-        setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      if (target === "email") {
+        const res = await fetch("/api/auth/password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setSuccess(t("success"));
+          setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        } else {
+          setError(data.message || t("errorMessage"));
+        }
       } else {
-        const errorMessage = data.retcode ? data.retcode.replace(/^\d+\s*/, '') : "Failed to change password";
-        setError(errorMessage);
+        const login = target;
+        // Verify current password
+        const checkRes = await fetch(
+          `/api/user/check_password?login=${login}&password=${encodeURIComponent(formData.currentPassword)}&type=main`
+        );
+        const checkData = await checkRes.json();
+
+        if (!checkData.success || !checkData.valid) {
+          setError(t("currentIncorrect"));
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(
+          `/api/user/change_password?login=${login}&type=main&password=${encodeURIComponent(formData.newPassword)}`
+        );
+        const data = await res.json();
+
+        if (data.success) {
+          setSuccess(t("success"));
+          setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        } else {
+          const errorMessage = data.retcode ? data.retcode.replace(/^\d+\s*/, "") : t("errorMessage");
+          setError(errorMessage);
+        }
       }
     } catch (err) {
-      setError("An error occurred while changing password");
+      setError(t("errorMessage"));
     } finally {
       setLoading(false);
     }
@@ -115,6 +159,62 @@ export default function SettingsPage() {
             </CardHeader>
             <Separator />
             <CardContent className="pt-6">
+              <div className="mb-4">
+                <Label className="mb-2 block text-sm font-medium">{t("targetLabel")}</Label>
+                <RadioGroup
+                  value={target}
+                  onValueChange={(val) => setTarget(val)}
+                  className="space-y-3"
+                >
+                  <Label className="flex items-center justify-between space-x-3 rounded-lg border p-3 hover:bg-accent/40">
+                    <div className="flex items-center space-x-3">
+                      <RadioGroupItem value="email" id="email-target" />
+                      <div>
+                        <p className="font-semibold">{t("targetEmail")}</p>
+                        <p className="text-xs text-muted-foreground">{t("targetEmailDesc")}</p>
+                      </div>
+                    </div>
+                  </Label>
+                  {accounts?.demo_login && (
+                    <Label className="flex items-center justify-between space-x-3 rounded-lg border p-3 hover:bg-accent/40">
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value={accounts.demo_login} id="demo-target" />
+                        <div>
+                          <p className="font-semibold">{t("targetDemo")}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {t("loginLabel")}: {accounts.demo_login}
+                          </p>
+                        </div>
+                      </div>
+                    </Label>
+                  )}
+                  {accounts?.real_login && (
+                    <Label className="flex items-center justify-between space-x-3 rounded-lg border p-3 hover:bg-accent/40">
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value={accounts.real_login} id="real-target" />
+                        <div>
+                          <p className="font-semibold">{t("targetReal")}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {t("loginLabel")}: {accounts.real_login}
+                          </p>
+                        </div>
+                      </div>
+                    </Label>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 inline-flex items-center gap-2"
+                    onClick={loadAccounts}
+                    type="button"
+                    disabled={refreshing}
+                  >
+                    <RefreshCcw className="h-4 w-4" />
+                    {refreshing ? t("refreshing") : t("refresh")}
+                  </Button>
+                </RadioGroup>
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                   <Alert variant="destructive">

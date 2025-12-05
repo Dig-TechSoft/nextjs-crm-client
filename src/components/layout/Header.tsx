@@ -20,8 +20,11 @@ import { useLocale, useTranslations } from "next-intl";
 export function Header() {
   const router = useRouter();
   const t = useTranslations('Navigation');
+  const tActions = useTranslations('Dashboard.actions');
   const locale = useLocale();
   const [userLabel, setUserLabel] = useState<string>("Trader");
+  const [mounted, setMounted] = useState(false);
+  const [accountType, setAccountType] = useState<"real" | "demo" | null>(null);
 
   const handleLogout = async () => {
     try {
@@ -50,6 +53,29 @@ export function Header() {
     loadUser();
   }, []);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const loadAccountType = async () => {
+      try {
+        const res = await fetch("/api/accounts/list");
+        const data = await res.json();
+        if (data.success) {
+          setAccountType(data.current_type);
+        }
+      } catch (err) {
+        console.error("Failed to load account type for header", err);
+      }
+    };
+    loadAccountType();
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center px-4 sm:px-6 gap-4">
@@ -72,11 +98,18 @@ export function Header() {
               <DropdownMenuItem asChild><Link href="/history" locale={locale}>{t('history')}</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link href="/positions" locale={locale}>{t('positions')}</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/funds/deposit" locale={locale}>{t('deposit')}</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/deposit/history" locale={locale}>{t('depositHistory')}</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/withdrawal" locale={locale}>{t('withdrawal')}</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href="/funds/withdrawal/history" locale={locale}>{t('withdrawalHistory')}</Link></DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {accountType !== "demo" && (
+                <>
+                  <DropdownMenuItem asChild><Link href="/funds/deposit" locale={locale}>{t('deposit')}</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/funds/deposit/history" locale={locale}>{t('depositHistory')}</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/funds/withdrawal" locale={locale}>{t('withdrawal')}</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/funds/withdrawal/history" locale={locale}>{t('withdrawalHistory')}</Link></DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              {accountType === "demo" && (
+                <DropdownMenuItem asChild><Link href="/demo/balance" locale={locale}>{tActions('setDemoBalance')}</Link></DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild><Link href="/settings" locale={locale}>{t('settings')}</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -108,26 +141,37 @@ export function Header() {
               {t('funds')}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem asChild>
-                <Link href="/funds/deposit" locale={locale} className="flex items-center gap-2">
-                  {t('deposit')}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/funds/deposit/history" locale={locale} className="flex items-center gap-2">
-                  {t('depositHistory')}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/funds/withdrawal" locale={locale} className="flex items-center gap-2">
-                  {t('withdrawal')}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/funds/withdrawal/history" locale={locale} className="flex items-center gap-2">
-                  {t('withdrawalHistory')}
-                </Link>
-              </DropdownMenuItem>
+              {accountType !== "demo" && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href="/funds/deposit" locale={locale} className="flex items-center gap-2">
+                      {t('deposit')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/funds/deposit/history" locale={locale} className="flex items-center gap-2">
+                      {t('depositHistory')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/funds/withdrawal" locale={locale} className="flex items-center gap-2">
+                      {t('withdrawal')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/funds/withdrawal/history" locale={locale} className="flex items-center gap-2">
+                      {t('withdrawalHistory')}
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+              {accountType === "demo" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/demo/balance" locale={locale} className="flex items-center gap-2">
+                    {tActions('setDemoBalance')}
+                  </Link>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 

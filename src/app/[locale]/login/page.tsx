@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Card,
   CardContent,
@@ -16,12 +19,13 @@ import {
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
-  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("Login");
+  const locale = useLocale();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,19 +38,18 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ login, password }),
+        body: JSON.stringify({ email, password }),
         credentials: "include",
       });
       const data = await res.json();
 
-      if (data.success && data.valid) {
+      if (data.success && data.valid && data.requireOtp) {
+        router.push(`/${locale}/otp?email=${encodeURIComponent(email)}`);
+      } else if (data.success && data.valid) {
         router.push("/");
       } else {
-        // Extract message from "CODE Message" format (e.g., "3006 Invalid account password")
-        const errorMessage = data.retcode
-          ? data.retcode.replace(/^\d+\s+/, "") // Remove error code prefix
-          : t("error");
-        setError(errorMessage);
+        const errorMessage = data.message || data.retcode || t("error");
+        setError(typeof errorMessage === "string" ? errorMessage : t("error"));
       }
     } catch (err) {
       setError(t("error"));
@@ -58,7 +61,10 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+        <CardHeader className="space-y-2 relative">
+          <div className="absolute right-0 top-0">
+            <LanguageSwitcher />
+          </div>
           <div className="flex flex-col items-center gap-3">
             <Image
               src="/images/flamycom.png"
@@ -78,13 +84,13 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="login">{t("loginId")}</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
-                id="login"
-                type="text"
-                value={login}
+                id="email"
+                type="email"
+                value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setLogin(e.target.value)
+                  setEmail(e.target.value)
                 }
                 required
               />
@@ -109,6 +115,15 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? t("verifying") : t("loginButton")}
             </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              {t("noAccount")}{" "}
+              <Link
+                href={`/${locale}/register`}
+                className="font-medium text-primary hover:underline"
+              >
+                {t("signupHere")}
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>

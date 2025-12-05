@@ -4,7 +4,8 @@
         "welcome": "欢迎回来，查看您的交易概览。",
         "actions": {
             "deposit": "存入资金",
-            "withdraw": "提取资金"
+            "withdraw": "提取资金",
+            "setDemoBalance": "设置模拟余额"
         },
         "balanceChart": {
             "title": "余额历史",
@@ -160,7 +161,37 @@
         "welcomeBack": "欢迎回来，{name}！",
         "allSet": "一切就绪，安心在 MT5 CRM 交易。",
         "notProvided": "暂无",
-        "loadError": "加载个人资料失败"
+        "loadError": "加载个人资料失败",
+        "accountSelector": {
+            "title": "账户切换",
+            "subtitle": "在模拟与真实账户之间切换",
+            "demo": "模拟账户",
+            "real": "真实账户",
+            "login": "登录号",
+            "realPending": "真实账户待开启",
+            "realPendingDesc": "完成认证后即可创建真实账户。",
+            "startKyc": "开始认证",
+            "switching": "正在切换账户...",
+            "loading": "正在加载关联账户..."
+        }
+    },
+    "Verification": {
+        "title": "需要认证",
+        "subtitle": "提交 KYC 以开通真实账户。",
+        "placeholder": "此处将放置 KYC 表单和材料上传。请按要求提供身份与住址证明。",
+        "cta": "提交认证（即将上线）",
+        "loading": "正在加载账户状态...",
+        "demoAccount": "模拟账户",
+        "realAccount": "真实账户",
+        "passwordRequired": "请输入密码",
+        "createLiveTitle": "创建真实账户",
+        "createLiveDesc": "通过 KYC 后，设置真实账户密码以继续。",
+        "passwordLabel": "真实账户密码",
+        "passwordPlaceholder": "输入密码以创建真实账户",
+        "creating": "创建中...",
+        "startKyc": "创建真实账户",
+        "liveCreated": "真实账户创建成功。",
+        "liveReady": "真实账户已就绪"
     },
     "Settings": {
         "title": "设置",
@@ -177,16 +208,89 @@
         "confirmNew": "请确认新密码",
         "success": "密码修改成功",
         "passwordsDoNotMatch": "密码不一致",
-        "description": "管理您的账户设置和偏好。"
+        "description": "管理您的账户设置和偏好。",
+        "targetLabel": "选择要修改密码的账户",
+        "targetEmail": "主账户（邮箱登录）",
+        "targetEmailDesc": "修改用于邮箱登录的主账户密码。",
+        "targetDemo": "模拟 MT5 账户",
+        "targetReal": "真实 MT5 账户",
+        "loginLabel": "登录号",
+        "refresh": "刷新账户",
+        "refreshing": "刷新中...",
+        "passwordPolicy": "密码需 8-12 位，包含大小写字母、数字，以及 !@#$%^&*._- 中的一个符号。",
+        "errorMessage": "修改密码时出错",
+        "currentIncorrect": "当前密码不正确"
     },
     "Login": {
         "title": "账户登录",
-        "subtitle": "输入您的 MT5 账户凭证",
-        "loginId": "登录 ID",
+        "subtitle": "请输入邮箱和密码",
+        "email": "邮箱",
         "password": "密码",
         "loginButton": "登录",
         "verifying": "验证中...",
-        "error": "登录失败"
+        "error": "登录失败",
+        "noAccount": "没有账户？",
+        "signupHere": "立即注册"
+    },
+    "Otp": {
+        "title": "输入验证码",
+        "subtitle": "我们已将 6 位验证码发送到您的邮箱。",
+        "subtitleEmail": "验证码已发送至 {email}。",
+        "code": "6 位验证码",
+        "submit": "验证并继续",
+        "verifying": "验证中...",
+        "back": "返回登录",
+        "error": "验证失败"
+    },
+    "Register": {
+        "title": "创建账户",
+        "subtitle": "使用邮箱注册并获取交易账户",
+        "email": "邮箱",
+        "password": "密码",
+        "confirmPassword": "确认密码",
+        "registerButton": "创建账户",
+        "submitting": "提交中...",
+        "passwordMismatch": "两次密码不一致",
+        "passwordRequirements": "密码需 8-12 位，至少包含大写字母、小写字母、数字，以及 !@#$%^&*._- 中的一个符号。",
+        "passwordHint": "长度 8-12，包含 A-Z、a-z、0-9，并至少一个 !@#$%^&*._-。",
+        "passwordStrength": "密码强度：{strength}",
+        "strengthWeak": "较弱",
+        "strengthMedium": "一般",
+        "strengthStrong": "良好",
+        "error": "注册失败",
+        "successDesc": "我们已发送验证链接到 {email}，请检查邮箱。",
+        "backToLogin": "返回登录"
+    },
+    "RegisterSuccess": {
+        "title": "请检查邮箱",
+        "message": "我们已发送验证链接到 {email}，请检查邮箱。",
+        "emailPlaceholder": "您的邮箱",
+        "ctaLogin": "前往登录",
+        "ctaBack": "返回注册"
+    },
+    "VerifyEmail": {
+        "title": "验证邮箱",
+        "verifying": "正在验证链接...",
+        "success": "邮箱已验证",
+        "error": "验证失败",
+        "missingToken": "验证链接缺失或无效。",
+        "ctaLogin": "前往登录",
+        "ctaRegister": "返回注册"
+    },
+    "DemoBalance": {
+        "title": "设置模拟余额",
+        "subtitle": "调整您的模拟账户余额以测试策略。",
+        "amount": "金额（USD）",
+        "submit": "更新余额",
+        "updating": "更新中...",
+        "back": "返回仪表盘",
+        "success": "模拟余额已更新。",
+        "error": "更新余额失败。",
+        "invalid": "请输入大于 0 的有效金额。",
+        "current": "当前余额",
+        "loading": "加载中...",
+        "hint": "输入目标余额，正数增加，负数减少。",
+        "note": "此工具将把您的模拟余额调整到目标金额。"
     },
     "FundsHistory": {
         "deposit": {

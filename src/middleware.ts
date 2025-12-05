@@ -21,10 +21,22 @@ export default function middleware(request: NextRequest) {
         pathname === '/login' ||
         pathname.startsWith('/login') ||
         /^\/(en|zh-Hans)\/login/.test(pathname);
+    const isOtp =
+        pathname === '/otp' ||
+        pathname.startsWith('/otp') ||
+        /^\/(en|zh-Hans)\/otp/.test(pathname);
+    const isRegister =
+        pathname === '/register' ||
+        pathname.startsWith('/register') ||
+        /^\/(en|zh-Hans)\/register/.test(pathname);
+    const isVerify =
+        pathname === '/verify-email' ||
+        pathname.startsWith('/verify-email') ||
+        /^\/(en|zh-Hans)\/verify-email/.test(pathname);
 
     const hasSession = Boolean(request.cookies.get('session')?.value);
 
-    if (!hasSession && !isLogin && !isApiRoute && !isPublicAsset) {
+    if (!hasSession && !isLogin && !isOtp && !isRegister && !isVerify && !isApiRoute && !isPublicAsset) {
         // Figure out locale from path or default
         const pathLocale = pathname.split('/')[1];
         const locale = (routing.locales as readonly string[]).includes(pathLocale)

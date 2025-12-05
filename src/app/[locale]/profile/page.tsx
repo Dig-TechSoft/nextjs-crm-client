@@ -91,7 +91,6 @@ export default function ProfilePage() {
 
       <main className="flex-1 container mx-auto py-12 px-4">
         <div className="max-w-4xl mx-auto space-y-8">
-
           {/* Hero Section */}
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl p-8 md:p-12 border">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
